@@ -42,16 +42,16 @@ def get_distance(steps):
     """Получить дистанцию пройденного пути в км."""
     # Посчитайте дистанцию в километрах,
     # исходя из количества шагов и длины шага.
-    distance = (STEP_M * steps) /1000
-    return distance
+    dist = steps * STEP_M /1000
+    return dist
 def get_spent_calories(dist, current_time):
     """Получить значения потраченных калорий."""
     hours = current_time.hour
-    minutes = hours * 60 + float(current_time.minute)
-    seconds = current_time.second 
-    use_time = float(current_time.hour) + float(current_time.minute / 60)
-    mean_speed = dist / use_time
-    spent_calories = (K_1*WEIGHT + (mean_speed ** 2 / HEIGHT) * K_2*WEIGHT) * minutes
+    minutes = float(current_time.minute)+ hours*60
+    seconds = current_time.second
+    minute = float(current_time.hour) + float(current_time.minute / 60)  
+    mean_speed = dist / minute
+    spent_calories = (K_1*WEIGHT + (mean_speed**2 / HEIGHT)* K_2*WEIGHT)* minutes
     return spent_calories
     # В уроке «Последовательности» вы написали формулу расчета калорий.
     # Перенесите её сюда и верните результат расчётов.
@@ -61,28 +61,28 @@ def get_spent_calories(dist, current_time):
 def get_achievement(dist):
     """Получить поздравления за пройденную дистанцию."""
     if dist >= 6.5:
-        achievement = 'Отличный результат! Цель достигнута.'
+        achievement ='Отличный результат! Цель достигнута.'
     elif dist >= 3.9:
-        achievement = 'Неплохо! День был продуктивным.'
+        achievement ='Неплохо! День был продуктивным.'
     elif dist >= 2:
-        achievement = 'Маловато, но завтра наверстаем!'
+        achievement ='Маловато, но завтра наверстаем!'
     else:
-        achievement = 'Лежать тоже полезно. Главное — участие, а не победа!'
+        achievement ='Лежать тоже полезно. Главное — участие, а не победа!'
     return achievement
     # В уроке «Строки» вы описали логику
     # вывода сообщений о достижении в зависимости
     # от пройденной дистанции.
     # Перенесите этот код сюда и замените print() на return.
 # Место для функции show_message.
-def show_message(pack_time, steps, dist, spent_calories, achievement):
+def show_message(current_time, steps, dist, spent_calories, achievement):
+    print(f'''
+Время: {current_time}.
+Количество шагов за сегодня: {steps}.
+Дистанция составила {dist:.2f} км.
+Вы сожгли {spent_calories:.2f} ккал.
+{achievement}
+''')
     
-    output =(f'''
-    Время: {pack_time}.
-    Количество шагов за сегодня: {steps}.
-    Дистанция составила {dist:.2f} км.
-    Вы сожгли {spent_calories:.2f} ккал.
-    {achievement}''')
-    print(output)
 def accept_package(data):
     """Обработать пакет данных."""
     
@@ -91,19 +91,19 @@ def accept_package(data):
     else:
     # Распакуйте полученные данные.
         time, steps = data
-        pack_time =dt.datetime.strptime(time, FORMAT).time() # Преобразуйте строку с временем в объект типа time.
+        current_time =dt.datetime.strptime(time, FORMAT).time() # Преобразуйте строку с временем в объект типа time.
  
     if check_correct_time(time) == False: # Если функция проверки значения времени вернет False
         return 'Некорректное значение времени'
     else:
-        day_steps =  get_step_day(steps)# Запишите результат подсчёта пройденных шагов.
+        steps =  get_step_day(steps)# Запишите результат подсчёта пройденных шагов.
         dist = get_distance(steps) # Запишите результат расчёта пройденной дистанции.
-        spent_calories = get_spent_calories(dist, pack_time)# Запишите результат расчёта сожжённых калорий.
+        spent_calories = get_spent_calories(dist, current_time)# Запишите результат расчёта сожжённых калорий.
         achievement =  get_achievement(dist)# Запишите выбранное мотивирующее сообщение.
             # Вызовите функцию show_message().
             # Добавьте новый элемент в словарь storage_data.
             # Верните словарь storage_data.
-        show_message(pack_time, day_steps, dist, spent_calories, achievement)
+        show_message(current_time, steps, dist, spent_calories, achievement)
         storage_data[time] = steps
         return storage_data
 
